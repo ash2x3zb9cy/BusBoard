@@ -3,10 +3,32 @@ const request = require('request');
 
 const API = 'https://api.tfl.gov.uk';
 
+// get stop IDs within 500m
+function getStopIDs(lat, lon, callback) {
+	request({
+		url: `${API}/StopPoint`,
+		qs: {
+			lat: lat,
+			lon: lon,
+			radius: 500,
+			//stopTypes: 'bus',
+		},
+	}, (error, response, body) => {
+		if(error) {
+			throw error;
+		}
+		console.log(body);
+	});
+}
+
 function getNextBuses(stop, number, callback) {
 	request(`${API}/StopPoint/${stop}/Arrivals`, (error, response, body) => {
 		if(error) {
 			throw error;
+		}
+		if (response.statusCode == 404) {
+			console.log("invlaid bus stop ID");
+			return;
 		}
 		const data = JSON.parse(body);
 
@@ -20,4 +42,4 @@ function getNextBuses(stop, number, callback) {
 	});
 }
 
-module.exports = {getNextBuses};
+module.exports = {getNextBuses, getStopIDs};
