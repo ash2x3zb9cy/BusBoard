@@ -6,39 +6,44 @@ const models = require('./models');
 const API = 'https://api.tfl.gov.uk';
 
 function getNearbyStops(lat, lon) {
+	console.log(`getNearbyStops(${lat}, ${lon})`);
 	return new Promise((resolve, reject) => {
 		request({
 			url: `${API}/StopPoint`,
 			qs: {
 				lat: lat,
 				lon: lon,
-				radius: 220,
+				radius: 200,
 				stopTypes: ['NaptanPublicBusCoachTram'].join(','),
 			},
 		}, (error, response, body) => {
 			if(error) {
-				reject(error);
+				console.log(`[getNearbyStops] ${error}`);
+				return reject(error);
 			}
 			if (response.statusCode !== 200) {
+				console.log(`[getNearbyStops] ${response.statusCode}`);
 				throw new Error('invalid lat/lon');
 			}
-
 			const data = JSON.parse(body);
-
-			resolve(data.stopPoints.map(x => new models.StopPoint(x.id, x.commonName)));
+			const map = data.stopPoints.map(x => new models.StopPoint(x.id, x.commonName));
+			resolve(map);
 		});
 	});
 }
 
 function getNextBuses(stop, number) {
+	console.log(`getNextBuses(${stop.stopID}, ${number})`);	
 	return new Promise((resolve, reject) => {
-		request(`${API}/StopPoint/${stop}/Arrivals`, (error, response, body) => {
+		console.log(`${API}/StopPoint/${stop.stopID}/Arrivals`);
+		request(`${API}/StopPoint/${stop.stopID}/Arrivals`, (error, response, body) => {
 			if(error) {
-				reject(error);
+				return reject(error);
 			}
 
 			if(response.statusCode !== 200) {
-				throw new Error('invalid bus stop ID');
+				//return reject(new Error(`Error ${response.statusCode} in getNextBuses`));
+				return resolve([]);
 			}
 
 			const data = JSON.parse(body);

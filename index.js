@@ -4,6 +4,7 @@ const readlineSync = require('readline-sync');
 
 const tflApi = require('./tfl_api');
 const postcodeApi = require('./postcode_api');
+const app = require('./server').createApp();
 
 function promptForStopID() {
 	const stopID = readlineSync.question('Enter a stop ID');
@@ -50,8 +51,8 @@ function debugGetLatLon() {
 
 			});
 
-		})
+		});
 	}).catch(e => {throw e});
 
 }
-debugGetLatLon();
+
