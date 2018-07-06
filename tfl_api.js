@@ -41,7 +41,7 @@ function getNextBuses(stop, number) {
 				return reject(error);
 			}
 
-			switch(resonse.statusCode){
+			switch(response.statusCode){
 				case 404:
 					return resolve([]);
 					break;
