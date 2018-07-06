@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 class StopPoint {
 	constructor(id, commonName) {
 		this.stopID = id;
@@ -8,4 +10,12 @@ class StopPoint {
 	}
 }
 
-module.exports = {StopPoint};
+class ArrivalInfo {
+	constructor(opts) {
+		this.lineName = opts.lineName;
+		this.destinationName = opts.destinationName;
+		this.expectedArrivalPretty = moment(opts.expectedArrival).fromNow();
+	}
+}
+
+module.exports = {StopPoint, ArrivalInfo};

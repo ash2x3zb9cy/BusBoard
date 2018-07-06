@@ -54,7 +54,10 @@ function getNextBuses(stop, number) {
 				return aArrival.isBefore(bArrival) ? -1 : 1;
 			});
 
-			resolve(data.slice(0, number));
+			resolve({
+				stop: stop,
+				arrivals: data.slice(0, number).map(x => new models.ArrivalInfo(x)),
+			});
 		});
 	});
 }

@@ -6,6 +6,8 @@ const postcodeApi = require('./postcode_api');
 function createApp() {
 	const app = express();
 
+	app.use(express.static('frontend'));
+
 	app.get('/', (req, res) => {
 		res.send('<!DOCTYPE html><html><body><h1>Hi</h1></body></html>');
 	});
@@ -23,7 +25,7 @@ function createApp() {
 				}));
 			})
 			.then(arrivals => {
-				console.log('arrivals:', arrivals.length, arrivals[0].length);
+				//console.log('arrivals:', arrivals.length, arrivals[0].arrivals.length);
 				res.json(arrivals);
 			})
 			.catch((e) => {
