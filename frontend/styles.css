@@ -1,0 +1,19 @@
+body {
+	margin: 0 auto;
+	width: 80%;
+}
+
+h1, h2, h3 {
+	font-family: "comic sans ms";
+	color: red;
+	text-shadow: 3px 3px turquoise;
+}
+
+li {
+	font-family: system-ui;
+}
+
+form * {
+	display: block;
+	width: 100%;
+}

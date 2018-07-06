@@ -41,9 +41,14 @@ function getNextBuses(stop, number) {
 				return reject(error);
 			}
 
-			if(response.statusCode !== 200) {
-				//return reject(new Error(`Error ${response.statusCode} in getNextBuses`));
-				return resolve([]);
+			switch(resonse.statusCode){
+				case 404:
+					return resolve([]);
+					break;
+				case 200:
+					break;
+				default:
+					return reject();
 			}
 
 			const data = JSON.parse(body);
