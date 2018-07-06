@@ -17,6 +17,7 @@ function getStopIDs(lat, lon, callback) {
 		if(error) {
 			throw error;
 		}
+		// TODO
 		console.log(body);
 	});
 }
@@ -27,11 +28,12 @@ function getNextBuses(stop, number, callback) {
 			throw error;
 		}
 		if (response.statusCode == 404) {
-			console.log("invlaid bus stop ID");
+			console.error("invalid bus stop ID");
 			return;
 		}
 		const data = JSON.parse(body);
 
+		// sort by arrival date
 		data.sort((a, b) => {
 			const aArrival = moment(a.expectedArrival);
 			const bArrival = moment(b.expectedArrival);

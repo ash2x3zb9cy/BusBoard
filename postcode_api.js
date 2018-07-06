@@ -8,7 +8,7 @@ function getLatLon(postcode, callback) {
 			throw error;
 		}
 		if (response.statusCode == 404) {
-			console.log("invlaid postcode");
+			console.error("invalid postcode");
 			return;
 		}
 		const data = JSON.parse(body);
@@ -18,5 +18,3 @@ function getLatLon(postcode, callback) {
 }
 
 module.exports = {getLatLon};
-
-// NW5 1TL
