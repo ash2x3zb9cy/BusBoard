@@ -5,60 +5,52 @@ const models = require('./models');
 
 const API = 'https://api.tfl.gov.uk';
 
-// get stops near a point
-function getNearbyStops(lat, lon, callback) {
-	request({
-		url: `${API}/StopPoint`,
-		qs: {
-			lat: lat,
-			lon: lon,
-			radius: 220,
-			stopTypes: ['NaptanPublicBusCoachTram'].join(','),
-		},
-	}, (error, response, body) => {
-		if(error) {
-			throw error;
-		}
+function getNearbyStops(lat, lon) {
+	return new Promise((resolve, reject) => {
+		request({
+			url: `${API}/StopPoint`,
+			qs: {
+				lat: lat,
+				lon: lon,
+				radius: 220,
+				stopTypes: ['NaptanPublicBusCoachTram'].join(','),
+			},
+		}, (error, response, body) => {
+			if(error) {
+				reject(error);
+			}
+			if (response.statusCode !== 200) {
+				throw new Error('invalid lat/lon');
+			}
 
-		if (response.statusCode !== 200) {
-			console.error('invalid lat/lon');
-			return;
-		}
+			const data = JSON.parse(body);
 
-		const data = JSON.parse(body);
-
-		if(data.stopPoints.length === 0) {
-			// TODO: Repeat query with greater distance?
-			console.error('no nearby stops found');
-			return;
-		}
-
-		const stopPoints = data.stopPoints.map(x => new models.StopPoint(x.id, x.commonName));
-
-		callback(stopPoints);
-
+			resolve(data.stopPoints.map(x => new models.StopPoint(x.id, x.commonName)));
+		});
 	});
 }
 
-function getNextBuses(stop, number, callback) {
-	request(`${API}/StopPoint/${stop}/Arrivals`, (error, response, body) => {
-		if(error) {
-			throw error;
-		}
-		if (response.statusCode !== 200) {
-			console.error("invalid bus stop ID");
-			return;
-		}
-		const data = JSON.parse(body);
+function getNextBuses(stop, number) {
+	return new Promise((resolve, reject) => {
+		request(`${API}/StopPoint/${stop}/Arrivals`, (error, response, body) => {
+			if(error) {
+				reject(error);
+			}
 
-		// sort by arrival date
-		data.sort((a, b) => {
-			const aArrival = moment(a.expectedArrival);
-			const bArrival = moment(b.expectedArrival);
-			return aArrival.isBefore(bArrival) ? -1 : 1;
+			if(response.statusCode !== 200) {
+				throw new Error('invalid bus stop ID');
+			}
+
+			const data = JSON.parse(body);
+
+			data.sort((a, b) => {
+				const aArrival = moment(a.expectedArrival);
+				const bArrival = moment(b.expectedArrival);
+				return aArrival.isBefore(bArrival) ? -1 : 1;
+			});
+
+			resolve(data.slice(0, number));
 		});
-
-		callback(data.slice(0, number));
 	});
 }
 

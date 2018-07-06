@@ -25,15 +25,19 @@ function promptForPostcode() {
 
 function debugGetLatLon() {
 	const postcode = 'NW5 1TL';
-	postcodeApi.getLatLon(postcode, (lat, lon) => {
-		tflApi.getNearbyStops(lat, lon, stopPoints => {
+	postcodeApi.getLatLon(postcode).then(latlon => {
+
+		const lat = latlon.lat;
+		const lon = latlon.lon;
+
+		tflApi.getNearbyStops(lat, lon).then(stopPoints => {
 
 			if(stopPoints.length === 0) {
 				console.error('no nearby stops');
 				return;
 			}
 
-			tflApi.getNextBuses(stopPoints[0].stopID, 5, arrivals => {
+			tflApi.getNextBuses(stopPoints[0].stopID, 5).then(arrivals => {
 				if(arrivals.length === 0) {
 					console.log('no arrivals incoming');
 					return;
@@ -46,7 +50,8 @@ function debugGetLatLon() {
 
 			});
 
-		});
-	})
+		})
+	}).catch(e => {throw e});
+
 }
 debugGetLatLon();

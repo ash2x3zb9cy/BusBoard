@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ashbc/BusBoard#readme",
   "dependencies": {
+    "express": "^4.16.3",
     "moment": "^2.22.2",
     "readline-sync": "^1.4.9",
     "request": "^2.87.0"
