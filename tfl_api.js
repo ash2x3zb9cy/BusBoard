@@ -67,4 +67,30 @@ function getNextBuses(stop, number) {
 	});
 }
 
-module.exports = {getNextBuses, getNearbyStops};
+function searchBikes(searchterm) {
+	return new Promise((resolve, reject) => {
+		console.log(`searchBikes(${searchterm})`);
+		request({
+			url: `${API}/BikePoint/Search`,
+			qs: { query: searchterm },
+		}, (error, response, body) => {
+			if(error) {
+				return reject(error);
+			}
+
+			switch(response.statusCode){
+				case 200:
+					break;
+				default:
+					return reject(body);
+			}
+
+			const data = JSON.parse(body);
+
+			resolve(data);
+
+		});
+	});
+}
+
+module.exports = {getNextBuses, getNearbyStops, searchBikes};
