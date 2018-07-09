@@ -20,7 +20,8 @@ function promptForPostcode() {
 	const postcode = readlineSync.question('Enter (a VALID!) postcode: ');
 
 	postcodeApi.getLatLon(postcode, (lat, lon) => {
-		tflApi.getStopIDs(lat, lon, null);
+		tflApi.getStopIDs(lat, lon)
+			.then(console.log);
 	});
 }
 
