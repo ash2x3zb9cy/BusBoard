@@ -72,7 +72,11 @@ function searchBikes(searchterm) {
 		console.log(`searchBikes(${searchterm})`);
 		request({
 			url: `${API}/BikePoint/Search`,
-			qs: { query: searchterm },
+			qs: {
+				query: searchterm,
+				app_id:"ec0267f0",
+				app_key:"f9adfeac47994d0615fb1521b1ef397d",
+			},
 		}, (error, response, body) => {
 			if(error) {
 				return reject(error);
@@ -87,10 +91,77 @@ function searchBikes(searchterm) {
 
 			const data = JSON.parse(body);
 
+			Promise.all(data.slice(0,50).map(x => (new models.BikePoint(x)).getDockStatus()))
+				.then(values => resolve(values));
+
+		});
+	});
+}
+
+function bikePointInfo(bikePointId) {
+	return new Promise((resolve, reject) => {
+		console.log(`bikePointInfo(${bikePointId})`);
+		request({
+			url:`${API}/BikePoint/${bikePointId}`,
+			app_id:"ec0267f0",
+			app_key:"f9adfeac47994d0615fb1521b1ef397d",
+		}, (error, response, body) => {
+			if(error) {
+				return reject(error);
+			}
+
+			switch(response.statusCode){
+				case 200:
+					break;
+				default:
+					return reject(body);
+			}
+
+			const data = JSON.parse(body);
 			resolve(data);
 
 		});
 	});
 }
 
-module.exports = {getNextBuses, getNearbyStops, searchBikes};
+function getBikesInArea(lat1, lon1, lat2, lon2) {
+	let swLat = Math.min(lat1, lat2);
+	let swLon = Math.min(lon1, lon2);
+	let neLat = Math.max(lat1, lat2);
+	let neLon = Math.max(lon1, lon2);
+
+	return new Promise((resolve, reject) => {
+		console.log(`getBikesInArea`);
+		request({
+			url:`${API}/Place`,
+			qs: {
+				type:"BikePoint",
+				swLat:swLat,
+				swLon:swLon,
+				neLat:neLat,
+				neLon:neLon,
+				app_id:"ec0267f0",
+				app_key:"f9adfeac47994d0615fb1521b1ef397d",
+			}}, (error, response, body) => {
+			if(error) {
+				return reject(error);
+			}
+
+			switch(response.statusCode){
+				case 200:
+					break;
+				default:
+					return reject(body);
+			}
+
+			const data = JSON.parse(body);
+			console.log(data);
+
+			Promise.all(data.slice(0,50).map(x => (new models.BikePoint(x)).getDockStatus()))
+				.then(values => resolve(values));
+
+		});
+	});
+}
+
+module.exports = {getNextBuses, getNearbyStops, searchBikes, bikePointInfo, getBikesInArea};

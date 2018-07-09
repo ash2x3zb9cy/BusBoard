@@ -18,4 +18,24 @@ class ArrivalInfo {
 	}
 }
 
-module.exports = {StopPoint, ArrivalInfo};
+class BikePoint {
+	constructor(opts) {
+		this.id = opts.id;
+		this.name = opts.commonName;
+		this.lat = opts.lat;
+		this.lon = opts.lon;
+		//this.getDockStatus();
+	}
+
+	getDockStatus() {
+		return new Promise((resolve, reject) =>{
+			require('./tfl_api').bikePointInfo(this.id).then(info => {
+				this.freeBikes = info.additionalProperties.find(x => x.key === "NbBikes").value;
+				this.freeDocks = info.additionalProperties.find(x => x.key === "NbEmptyDocks").value;
+				resolve(this);
+			});
+		});
+	}
+}
+
+module.exports = {StopPoint, ArrivalInfo, BikePoint};

@@ -54,6 +54,13 @@ function debugGetLatLon() {
 
 		});
 	}).catch(e => {throw e});
-
 }
 
+function debugBikes() {
+	const searchTerm = 'St. James';
+	tflApi.searchBikes(searchTerm).then(bikePoints => {
+		console.log(bikePoints);
+	});
+}
+
+debugBikes();
